@@ -1,9 +1,5 @@
 {
   "name": "dashboard-abs",
   "version": "1.0.0",
-  "type": "module",
-  "scripts": {
-    "dev": "vercel dev"
-  },
-  "dependencies": {}
+  "private": true
 }
