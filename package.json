@@ -1,13 +1,12 @@
 {
-  "version": 2,
-  "routes": [
-    {
-      "src": "/api/(.*)",
-      "dest": "/api/$1"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/index.html"
-    }
-  ]
+  "name": "dashboard-abs",
+  "version": "1.0.0",
+  "description": "AS Consultorias Dashboard",
+  "type": "module",
+  "scripts": {
+    "dev": "vercel dev",
+    "build": "echo \"no build step\"",
+    "start": "node api/chat.js"
+  },
+  "dependencies": {}
 }
