@@ -1,1 +1,95 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: Arial, sans-serif;
+}
 
+body {
+  background: #0d0f1a;
+  color: #fff;
+}
+
+/* LOGIN */
+#tela-login {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.login-box {
+  background: #1a1d2e;
+  padding: 30px;
+  border-radius: 10px;
+  width: 300px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.login-box input {
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+}
+
+.login-box button {
+  padding: 10px;
+  background: #f7c948;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+/* DASHBOARD */
+#tela-dashboard {
+  display: none;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  padding: 15px;
+  background: #1a1d2e;
+}
+
+.kpis {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  padding: 20px;
+}
+
+.card {
+  background: #1a1d2e;
+  padding: 20px;
+  border-radius: 10px;
+  text-align: center;
+}
+
+.chat {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+#chat-pergunta {
+  padding: 10px;
+}
+
+.msg {
+  padding: 8px;
+  margin: 5px 0;
+}
+
+.msg.user {
+  text-align: right;
+  color: #f7c948;
+}
+
+.msg.bot {
+  text-align: left;
+  color: #a0aec0;
+}
