@@ -1,6 +1,8 @@
 export default async function handler(req, res) {
   if (req.method !== "POST") {
-    return res.status(405).json({ error: "Método não permitido" });
+    return res.status(405).json({
+      error: "Método não permitido"
+    });
   }
 
   try {
@@ -10,7 +12,7 @@ export default async function handler(req, res) {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: Bearer ${process.env.OPENAI_API_KEY}
+        "Authorization": `Bearer ${process.env.OPENAI_API_KEY}`
       },
       body: JSON.stringify({
         model: "gpt-5.5",
@@ -20,15 +22,11 @@ export default async function handler(req, res) {
             content: [
               {
                 type: "input_text",
-                text: `Você é um consultor especialista em delivery, iFood, 99Food,
-CMV, DRE, gestão de restaurantes, marketing, estoque, precificação,
-ticket médio e aumento de vendas.
-
-Sempre responda em português do Brasil.`
+                text: "Você é um consultor especialista em delivery, iFood, 99Food, CMV, DRE, gestão de restaurantes, marketing, estoque, precificação, ticket médio e aumento de vendas. Sempre responda em português do Brasil."
               }
             ]
           },
-          ...messages.map(m => ({
+          ...(messages || []).map((m) => ({
             role: m.role,
             content: [
               {
@@ -41,13 +39,26 @@ Sempre responda em português do Brasil.`
       })
     });
 
+    if (!response.ok) {
+      const erro = await response.text();
+      return res.status(response.status).json({
+        error: erro
+      });
+    }
+
     const data = await response.json();
 
-    res.status(200).json(data);
+    const content =
+      data.output?.[0]?.content?.find((c) => c.type === "output_text")?.text ||
+      "Sem resposta.";
 
-  } catch (err) {
-    res.status(500).json({
-      error: err.message
+    return res.status(200).json({
+      content
+    });
+
+  } catch (error) {
+    return res.status(500).json({
+      error: error.message
     });
   }
 }
