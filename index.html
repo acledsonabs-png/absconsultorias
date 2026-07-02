@@ -1,50 +1,97 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>AS Consultorias</title>
-  <link rel="stylesheet" href="style.css" />
+
+  <link rel="icon" href="assets/favicon.ico">
+  <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
 <div id="tela-login">
   <div class="login-box">
     <h1>AS Consultorias</h1>
 
-    <input id="email" type="email" placeholder="E-mail" />
-    <input id="senha" type="password" placeholder="Senha" />
+    <input
+      id="email"
+      type="email"
+      placeholder="E-mail"
+      autocomplete="email"
+    >
 
-    <button id="btn-login">Entrar</button>
+    <input
+      id="senha"
+      type="password"
+      placeholder="Senha"
+      autocomplete="current-password"
+    >
+
+    <button id="btn-login" type="button">
+      Entrar
+    </button>
   </div>
 </div>
 
-<div id="tela-dashboard">
+<div id="tela-dashboard" style="display:none;">
 
   <header>
     <div class="logo">Dashboard</div>
+
     <div>
       <span id="user-email"></span>
-      <button id="btn-logout">Sair</button>
+      <button id="btn-logout" type="button">
+        Sair
+      </button>
     </div>
   </header>
 
   <main>
 
     <section class="kpis">
-      <div class="card">Taxa de cliente <span>–</span></div>
-      <div class="card">Tempo médio <span>–</span></div>
-      <div class="card">Cancelamentos <span>–</span></div>
-      <div class="card">Avaliação média <span>–</span></div>
+
+      <div class="card">
+        Taxa de cliente
+        <span>—</span>
+      </div>
+
+      <div class="card">
+        Tempo médio
+        <span>—</span>
+      </div>
+
+      <div class="card">
+        Cancelamentos
+        <span>—</span>
+      </div>
+
+      <div class="card">
+        Avaliação média
+        <span>—</span>
+      </div>
+
     </section>
 
     <section class="chat">
+
       <div id="chat-msgs">
-        <div class="msg bot">Consultor IA pronto.</div>
+        <div class="msg bot">
+          Consultor IA pronto.
+        </div>
       </div>
 
-      <input id="chat-pergunta" placeholder="Pergunte algo..." />
-      <button id="btn-enviar">Enviar</button>
+      <input
+        id="chat-pergunta"
+        type="text"
+        placeholder="Pergunte algo..."
+      >
+
+      <button id="btn-enviar" type="button">
+        Enviar
+      </button>
+
     </section>
 
   </main>
