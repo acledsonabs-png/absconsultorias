@@ -30,6 +30,8 @@ async function checkSession() {
   const { data } = await supabase.auth.getSession();
   if (data.session) {
     showDashboard(data.session.user);
+  } else {
+    showLogin();
   }
 }
 
@@ -61,7 +63,7 @@ async function sendMessage() {
   const message = chatInput.value;
   if (!message) return;
 
-  chatMsgs.innerHTML += <div class="msg user">${message}</div>;
+  chatMsgs.innerHTML += `<div class="msg user">${message}</div>`;
   chatInput.value = "";
 
   const res = await fetch("/api/chat", {
@@ -78,7 +80,7 @@ async function sendMessage() {
 
   const text = data.content || "Sem resposta";
 
-  chatMsgs.innerHTML += <div class="msg bot">${text}</div>;
+  chatMsgs.innerHTML += `<div class="msg bot">${text}</div>`;
 }
 
 chatBtn.addEventListener("click", sendMessage);
