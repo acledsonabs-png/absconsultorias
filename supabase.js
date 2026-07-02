@@ -1,13 +1,7 @@
 import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
 
-const SUPABASE_URL = "https://epcnujsdoxnwkbeemxyv.supabase.co";
-const SUPABASE_ANON_KEY = "COLE_SUA_ANON_KEY_AQUI";
+const supabaseUrl = "https://blollxoieizbaiggzgwd.supabase.co";
 
-if (!SUPABASE_URL || !SUPABASE_ANON_KEY || SUPABASE_ANON_KEY === "COLE_SUA_ANON_KEY_AQUI") {
-  throw new Error("Configure a SUPABASE_ANON_KEY em supabase.js.");
-}
+const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJsb2xseG9pZWl6YmFpZ2d6Z3dkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI3MTMyNTgsImV4cCI6MjA5ODI4OTI1OH0.Ks1Z1WRYXnlGQrZVFCt35fDy8K0QXnMOCn6GsqJ8yQQ";
 
-export const supabase = createClient(
-  SUPABASE_URL,
-  SUPABASE_ANON_KEY
-);
+export const supabase = createClient(supabaseUrl, supabaseKey);
