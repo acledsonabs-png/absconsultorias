@@ -18,7 +18,7 @@ const userEmail = document.getElementById("user-email");
 function showDashboard(user) {
   telaLogin.style.display = "none";
   telaDash.style.display = "block";
-  userEmail.textContent = user.email;
+  userEmail.textContent = user?.email || "";
 }
 
 function showLogin() {
@@ -28,6 +28,7 @@ function showLogin() {
 
 async function checkSession() {
   const { data } = await supabase.auth.getSession();
+
   if (data.session) {
     showDashboard(data.session.user);
   } else {
@@ -37,54 +38,93 @@ async function checkSession() {
 
 checkSession();
 
+supabase.auth.onAuthStateChange((_event, session) => {
+  if (session) {
+    showDashboard(session.user);
+  } else {
+    showLogin();
+  }
+});
+
 loginBtn.addEventListener("click", async () => {
-  const email = emailInput.value;
+  const email = emailInput.value.trim();
   const password = senhaInput.value;
 
-  const { data, error } = await supabase.auth.signInWithPassword({
-    email,
-    password,
-  });
-
-  if (error) {
-    alert(error.message);
+  if (!email || !password) {
+    alert("Informe e-mail e senha.");
     return;
   }
 
-  showDashboard(data.user);
+  loginBtn.disabled = true;
+
+  try {
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password
+    });
+
+    if (error) throw error;
+
+    showDashboard(data.session.user);
+  } catch (err) {
+    alert(err.message);
+  } finally {
+    loginBtn.disabled = false;
+  }
 });
 
 logoutBtn.addEventListener("click", async () => {
   await supabase.auth.signOut();
-  showLogin();
 });
 
 async function sendMessage() {
-  const message = chatInput.value;
+  const message = chatInput.value.trim();
+
   if (!message) return;
 
   chatMsgs.innerHTML += `<div class="msg user">${message}</div>`;
+
   chatInput.value = "";
+  chatBtn.disabled = true;
 
-  const res = await fetch("/api/chat", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      messages: [{ role: "user", content: message }],
-    }),
-  });
+  try {
+    const response = await fetch("/api/chat", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        messages: [
+          {
+            role: "user",
+            content: message
+          }
+        ]
+      })
+    });
 
-  const data = await res.json();
+    if (!response.ok) {
+      throw new Error("Erro ao consultar a IA.");
+    }
 
-  const text = data.content || "Sem resposta";
+    const data = await response.json();
 
-  chatMsgs.innerHTML += `<div class="msg bot">${text}</div>`;
+    chatMsgs.innerHTML += `<div class="msg bot">${data.content || "Sem resposta."}</div>`;
+    chatMsgs.scrollTop = chatMsgs.scrollHeight;
+
+  } catch (err) {
+    chatMsgs.innerHTML += `<div class="msg bot">Erro: ${err.message}</div>`;
+  } finally {
+    chatBtn.disabled = false;
+    chatInput.focus();
+  }
 }
 
 chatBtn.addEventListener("click", sendMessage);
 
 chatInput.addEventListener("keydown", (e) => {
-  if (e.key === "Enter") sendMessage();
+  if (e.key === "Enter") {
+    e.preventDefault();
+    sendMessage();
+  }
 });
