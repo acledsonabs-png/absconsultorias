@@ -1,8 +1,15 @@
 {
   "name": "absconsultorias",
-  "version": "1.0.0",
+  "version": "2.0.0",
+  "description": "Sistema de Consultoria para Delivery",
   "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
-    "start": "npx serve ."
+    "dev": "vercel dev",
+    "start": "vercel dev",
+    "build": "echo \"Build concluído\""
   }
 }
