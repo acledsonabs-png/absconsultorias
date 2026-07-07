@@ -6,7 +6,13 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { messages } = req.body;
+    if (!process.env.OPENAI_API_KEY) {
+      return res.status(500).json({
+        error: "A variável OPENAI_API_KEY não foi configurada na Vercel."
+      });
+    }
+
+    const { messages = [] } = req.body;
 
     const response = await fetch("https://api.openai.com/v1/responses", {
       method: "POST",
@@ -22,11 +28,11 @@ export default async function handler(req, res) {
             content: [
               {
                 type: "input_text",
-                text: "Você é um consultor especialista em delivery, iFood, 99Food, CMV, DRE, gestão de restaurantes, marketing, estoque, precificação, ticket médio e aumento de vendas. Sempre responda em português do Brasil."
+                text: "Você é um consultor especialista em delivery, iFood, 99Food, CMV, DRE, gestão de restaurantes, estoque, marketing, ticket médio e aumento de vendas. Responda sempre em português do Brasil."
               }
             ]
           },
-          ...(messages || []).map((m) => ({
+          ...messages.map((m) => ({
             role: m.role,
             content: [
               {
@@ -39,26 +45,30 @@ export default async function handler(req, res) {
       })
     });
 
+    const data = await response.json();
+
     if (!response.ok) {
-      const erro = await response.text();
+      console.error(data);
+
       return res.status(response.status).json({
-        error: erro
+        error: data.error?.message || "Erro ao consultar a OpenAI."
       });
     }
 
-    const data = await response.json();
-
     const content =
-      data.output?.[0]?.content?.find((c) => c.type === "output_text")?.text ||
-      "Sem resposta.";
+      data.output?.[0]?.content?.find(
+        (item) => item.type === "output_text"
+      )?.text || "Sem resposta.";
 
     return res.status(200).json({
-      content
+        content
     });
 
-  } catch (error) {
+  } catch (err) {
+    console.error(err);
+
     return res.status(500).json({
-      error: error.message
+      error: err.message
     });
   }
 }
