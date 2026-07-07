@@ -1,4 +1,3 @@
--- ATIVA UUID
 create extension if not exists pgcrypto;
 
 ---------------------------------------
@@ -6,12 +5,14 @@ create extension if not exists pgcrypto;
 ---------------------------------------
 
 create table clientes (
-  id uuid primary key default gen_random_uuid(),
-  nome text not null,
-  email text,
-  telefone text,
-  plano text default 'Premium',
-  created_at timestamptz default now()
+    id uuid primary key default gen_random_uuid(),
+    nome text not null,
+    email text unique not null,
+    telefone text,
+    empresa text,
+    plano text default 'Premium',
+    ativo boolean default true,
+    created_at timestamptz default now()
 );
 
 ---------------------------------------
@@ -19,48 +20,48 @@ create table clientes (
 ---------------------------------------
 
 create table restaurantes (
-  id uuid primary key default gen_random_uuid(),
-  cliente_id uuid references clientes(id) on delete cascade,
-  nome text not null,
-  plataforma text,
+    id uuid primary key default gen_random_uuid(),
+    cliente_id uuid references clientes(id) on delete cascade,
 
-  taxa_aceite numeric default 0,
-  tempo_medio integer default 0,
-  cancelamentos integer default 0,
-  avaliacao numeric default 0,
+    nome text not null,
+    plataforma text,
 
-  ticket_medio numeric default 0,
-  faturamento numeric default 0,
-  cmv numeric default 0,
+    cidade text,
+    estado text,
 
-  created_at timestamptz default now()
+    created_at timestamptz default now()
 );
 
 ---------------------------------------
--- HISTÓRICO DA IA
+-- KPI DIÁRIO
 ---------------------------------------
 
-create table ia_historico (
-  id uuid primary key default gen_random_uuid(),
-  cliente_id uuid references clientes(id),
-  pergunta text,
-  resposta text,
-  created_at timestamptz default now()
-);
+create table indicadores (
 
----------------------------------------
--- ESTOQUE
----------------------------------------
+    id uuid primary key default gen_random_uuid(),
 
-create table estoque (
-  id uuid primary key default gen_random_uuid(),
-  restaurante_id uuid references restaurantes(id),
+    restaurante_id uuid references restaurantes(id) on delete cascade,
 
-  produto text,
-  quantidade numeric,
-  custo numeric,
+    data date default current_date,
 
-  created_at timestamptz default now()
+    pedidos integer default 0,
+    faturamento numeric default 0,
+
+    ticket_medio numeric default 0,
+
+    taxa_aceite numeric default 0,
+
+    tempo_medio integer default 0,
+
+    cancelamentos integer default 0,
+
+    avaliacao numeric default 0,
+
+    cmv numeric default 0,
+
+    lucro numeric default 0,
+
+    created_at timestamptz default now()
 );
 
 ---------------------------------------
@@ -68,12 +69,87 @@ create table estoque (
 ---------------------------------------
 
 create table dre (
-  id uuid primary key default gen_random_uuid(),
-  restaurante_id uuid references restaurantes(id),
 
-  receita numeric,
-  despesas numeric,
-  lucro numeric,
+    id uuid primary key default gen_random_uuid(),
 
-  created_at timestamptz default now()
+    restaurante_id uuid references restaurantes(id),
+
+    receita numeric default 0,
+
+    impostos numeric default 0,
+
+    custos numeric default 0,
+
+    despesas numeric default 0,
+
+    lucro numeric default 0,
+
+    created_at timestamptz default now()
+);
+
+---------------------------------------
+-- ESTOQUE
+---------------------------------------
+
+create table estoque (
+
+    id uuid primary key default gen_random_uuid(),
+
+    restaurante_id uuid references restaurantes(id),
+
+    produto text,
+
+    categoria text,
+
+    quantidade numeric,
+
+    unidade text,
+
+    custo numeric,
+
+    validade date,
+
+    minimo numeric,
+
+    created_at timestamptz default now()
+);
+
+---------------------------------------
+-- AÇÕES / CONSULTORIA
+---------------------------------------
+
+create table planos_acao (
+
+    id uuid primary key default gen_random_uuid(),
+
+    restaurante_id uuid references restaurantes(id),
+
+    titulo text,
+
+    descricao text,
+
+    prioridade text,
+
+    status text default 'Pendente',
+
+    created_at timestamptz default now()
+);
+
+---------------------------------------
+-- HISTÓRICO IA
+---------------------------------------
+
+create table ia_historico (
+
+    id uuid primary key default gen_random_uuid(),
+
+    cliente_id uuid references clientes(id),
+
+    pergunta text,
+
+    resposta text,
+
+    tokens integer,
+
+    created_at timestamptz default now()
 );
