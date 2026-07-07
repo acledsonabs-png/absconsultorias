@@ -6,69 +6,86 @@ export default async function handler(req, res) {
   }
 
   try {
-    if (!process.env.OPENAI_API_KEY) {
+    const apiKey = process.env.OPENAI_API_KEY;
+
+    if (!apiKey) {
       return res.status(500).json({
-        error: "A variável OPENAI_API_KEY não foi configurada na Vercel."
+        error: "OPENAI_API_KEY não configurada na Vercel."
       });
     }
 
-    const { messages = [] } = req.body;
+    const { messages } = req.body;
 
-    const response = await fetch("https://api.openai.com/v1/responses", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${process.env.OPENAI_API_KEY}`
-      },
-      body: JSON.stringify({
-        model: "gpt-5.5",
-        input: [
-          {
-            role: "system",
-            content: [
-              {
-                type: "input_text",
-                text: "Você é um consultor especialista em delivery, iFood, 99Food, CMV, DRE, gestão de restaurantes, estoque, marketing, ticket médio e aumento de vendas. Responda sempre em português do Brasil."
-              }
-            ]
-          },
-          ...messages.map((m) => ({
-            role: m.role,
-            content: [
-              {
-                type: "input_text",
-                text: m.content
-              }
-            ]
-          }))
-        ]
-      })
-    });
+    const response = await fetch(
+      "https://api.openai.com/v1/responses",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${apiKey}`
+        },
+        body: JSON.stringify({
+          model: "gpt-5-mini",
+          input: [
+            {
+              role: "system",
+              content: [
+                {
+                  type: "input_text",
+                  text:
+                    "Você é o assistente da AS Consultorias. Especialista em delivery, iFood, 99Food, CMV, DRE, estoque, gestão de restaurantes, marketing e aumento de vendas. Responda sempre em português do Brasil."
+                }
+              ]
+            },
+            ...(messages || []).map((msg) => ({
+              role: msg.role,
+              content: [
+                {
+                  type: "input_text",
+                  text: msg.content
+                }
+              ]
+            }))
+          ]
+        })
+      }
+    );
 
     const data = await response.json();
 
-    if (!response.ok) {
-      console.error(data);
+    console.log("RESPOSTA OPENAI:", data);
 
+    if (!response.ok) {
       return res.status(response.status).json({
-        error: data.error?.message || "Erro ao consultar a OpenAI."
+        error:
+          data?.error?.message ||
+          "Erro retornado pela OpenAI."
       });
     }
 
-    const content =
-      data.output?.[0]?.content?.find(
-        (item) => item.type === "output_text"
-      )?.text || "Sem resposta.";
+    let resposta = "";
+
+    if (data.output) {
+      data.output.forEach((item) => {
+        if (item.content) {
+          item.content.forEach((c) => {
+            if (c.text) {
+              resposta += c.text;
+            }
+          });
+        }
+      });
+    }
 
     return res.status(200).json({
-        content
+      content: resposta || "Não consegui gerar uma resposta."
     });
 
-  } catch (err) {
-    console.error(err);
+  } catch (error) {
+    console.error("ERRO API:", error);
 
     return res.status(500).json({
-      error: err.message
+      error: error.message
     });
   }
 }
